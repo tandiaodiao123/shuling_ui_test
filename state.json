@@ -1,0 +1,95 @@
+{
+  "cookies": [
+    {
+      "name": "_ytdeviceid_daily",
+      "value": "yd9ab05ovoxs2ytbldb3",
+      "domain": ".yuntim.com",
+      "path": "/",
+      "expires": 1829549041.809092,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_yttoken_daily",
+      "value": "yfflovoxs2zlrryf",
+      "domain": ".yuntim.com",
+      "path": "/",
+      "expires": 1829549041.809353,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ytuserid_daily",
+      "value": "1602093",
+      "domain": ".yuntim.com",
+      "path": "/",
+      "expires": 1829549061.204535,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ytdeviceid_daily",
+      "value": "ydc178aovpb70ex3vfb6",
+      "domain": ".bookln.cn",
+      "path": "/",
+      "expires": 1829549070.984948,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://www-daily.yuntim.com",
+      "localStorage": [
+        {
+          "name": "lastLoginUser",
+          "value": "15528397932"
+        },
+        {
+          "name": "loginDTO",
+          "value": "{\"anyMouse\":false,\"anyMouseV2\":false,\"apptype\":3,\"balance\":0,\"loginType\":11,\"name\":\"大喜\",\"nick\":\"大喜\",\"phone\":\"15528397932\",\"realName\":\"大喜\",\"regTime\":1661993955000,\"role\":0,\"sessionId\":\"yfflovoxs2zlrryf\",\"sex\":2,\"smallPhoto\":\"https://ytpan.bookln.cn/btpan/insecure/stand/daily/sys/1602093_20220819171748_htybe.jpeg\",\"status\":1,\"userId\":1602093}"
+        },
+        {
+          "name": "loginUser",
+          "value": "1602093"
+        },
+        {
+          "name": "iconify-version",
+          "value": "iconify2"
+        },
+        {
+          "name": "iconify-count",
+          "value": "0"
+        },
+        {
+          "name": "conn-url-daily",
+          "value": "wss://socketservertcp-daily.bookln.cn:31002/socket"
+        },
+        {
+          "name": "lastUpdateCheckTime",
+          "value": "1794989062258"
+        },
+        {
+          "name": "ytAppCode",
+          "value": "robot:20251021153317_Owz6o"
+        },
+        {
+          "name": "15528397932-lastLoginUserInfoKey",
+          "value": "{\"username\":\"15528397932\",\"sessionId\":\"yfflovoxs2zlrryf\"}"
+        },
+        {
+          "name": "ownInfo",
+          "value": "{\"currentOrganizeId\":99,\"currentOrganizeName\":\"协同测试\",\"entryTime\":\"2022-06-24 00:00:00\",\"gmtCreate\":\"2022-07-04 15:15:39\",\"gmtModified\":\"2023-01-10 11:11:09\",\"id\":436,\"isDelete\":0,\"job\":\"测试工程师\",\"jobNo\":\"029\",\"jobStatus\":1,\"meetingStatus\":0,\"mobile\":\"15528397932\",\"nick\":\"大喜\",\"organizeId\":99,\"pinyin\":\"dxidaxi\",\"realName\":\"大喜\",\"role\":1,\"sex\":2,\"smallPhoto\":\"https://ytpan.bookln.cn/btpan/insecure/stand/daily/sys/1602093_20220819171748_htybe.jpeg\",\"status\":1,\"thirdJwt\":\"it1.eyJzdWIiOiIxNjAyMDkzIiwibmFtZSI6IuWkp-WWnCIsImlhdCI6MTU3NzgzNjgwMCwiZXhwIjowLCJpc3MiOiJ5dW50aW0iLCJhdWQiOiJpdGFibGUifQ.Ax0mdS7Uq62uFjVpab45GLn6xcqdld61yMBcaNQPL_I\",\"type\":1,\"userId\":1602093}"
+        },
+        {
+          "name": "version",
+          "value": "0.6.0"
+        }
+      ]
+    }
+  ]
+}

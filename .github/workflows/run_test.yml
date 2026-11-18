@@ -1,0 +1,39 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest # 云端使用的是 Linux 系统
+    steps:
+    - uses: actions/checkout@v3
+
+    # 1. 设置 Python 环境
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' # 换成你本地用的 Python 版本
+
+    # 2. 核心：让云端根据 requirements.txt 安装库
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 3. 极其重要：安装 Playwright 的浏览器内核
+    # 云端服务器是纯净的，没有 Chrome/Chromium 浏览器，必须通过命令下载
+    - name: Install Playwright Browsers
+      run: playwright install --with-deps chromium
+
+    # 4. 还原你的 state.json 登录状态（用前面教的 GitHub Secrets）
+    - name: Setup Playwright State
+      run: echo '${{ secrets.PLAYWRIGHT_STATE }}' > state.json
+
+    # 5. 运行你的测试代码
+    - name: Run tests
+      run: pytest test_shuling_ui.py
