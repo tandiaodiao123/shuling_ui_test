@@ -1,8 +1,11 @@
 # conftest.py
 import os
 import pytest
-from playwright.sync_api import sync_playwright, Page
+from playwright.sync_api import sync_playwright, Page, TimeoutError as PlaywrightTimeoutError
 from config import STATE_FILE, LOGIN_URL, HEADLESS
+
+# 首屏较慢，且会先跳 app.htm 再跳 chat.htm；networkidle 因长轮询永不静默
+LOAD_TIMEOUT = 60000
 
 
 @pytest.fixture(scope="session")
@@ -16,10 +19,14 @@ def page() -> Page:
             print(f"\n✅ 检测到 {STATE_FILE}，自动加载登录状态...")
             context = browser.new_context(storage_state=STATE_FILE)
             pg = context.new_page()
+            pg.set_default_timeout(LOAD_TIMEOUT)
 
             # 已登录 → login 页会自动重定向到 chat.htm
-            pg.goto(LOGIN_URL)
-            pg.wait_for_load_state("networkidle")
+            pg.goto(LOGIN_URL, wait_until="commit", timeout=LOAD_TIMEOUT)
+            try:
+                pg.wait_for_url("**/bizmodule/bteam/home/chat.htm", timeout=LOAD_TIMEOUT)
+            except PlaywrightTimeoutError:
+                pass
 
             # 若 URL 还停在 login，说明状态失效
             if "login" in pg.url.lower():

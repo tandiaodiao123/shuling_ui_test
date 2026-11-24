@@ -20,3 +20,8 @@ venv/
 /httpRequests/
 
 
+
+# 登录态文件含 cookie / token，不入库（CI 由 secret 生成）
+state.json
+login_expired.png
+verify_state.png
