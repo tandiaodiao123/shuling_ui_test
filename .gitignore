@@ -25,3 +25,6 @@ venv/
 state.json
 login_expired.png
 verify_state.png
+reports/
+screenshots/
+.pytest_cache/
