@@ -23,10 +23,14 @@ T-18/T-19/T-20/T-23/T-24/T-25/T-26/T-28/T-30。
 """
 
 import re
+from urllib.parse import urlparse
 
 from playwright.sync_api import Page, expect
 
+from config import LOGIN_URL
+
 TOTAL_PATTERN = re.compile(r"共\s*\d+\s*条")
+BASE_URL = "{0.scheme}://{0.netloc}".format(urlparse(LOGIN_URL))
 QUESTION_BANK_PATH = "/bizmodule/aiTutorWeb/questionBank.htm"
 
 QUESTION_BANK_HEADERS = [
@@ -413,7 +417,7 @@ def test_t29_question_bank_deep_link(page: Page) -> None:
     new_page = page.context.new_page()
     try:
         response = new_page.goto(
-            "https://www-daily.yuntim.com" + QUESTION_BANK_PATH,
+            BASE_URL + QUESTION_BANK_PATH,
             wait_until="domcontentloaded",
             timeout=60000,
         )
