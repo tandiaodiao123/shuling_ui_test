@@ -7,16 +7,19 @@
 - T-09 题库顶部四项搜索（ID 精确、名称模糊、重置）
 - T-10 操作栏上下架展示
 - T-11 驳回次数区间筛选
+- T-12 错误明细「错误原因」单选与默认全部
 - T-13 驳回次数非法区间提示
 - T-14 空结果筛选
 - T-17 筛选接口失败提示且保留旧结果
+- T-19 题库 1280×720 表头对齐与横向滚动
+- T-20 切换错误分类重置错误原因
 - T-21 多选枚举语义（同项任一命中、不同条件同时满足）
 - T-22 切换学科学段清空题型
 - T-27 1440×900 四入口无页面级横向溢出
 - T-29 深链直达题库列表
 
-未覆盖（报告中已说明缺口）：T-03/T-04/T-05/T-06/T-07/T-12/T-15/T-16/
-T-18/T-19/T-20/T-23/T-24/T-25/T-26/T-28/T-30。
+未覆盖（报告中已说明缺口）：T-03/T-04/T-05/T-06/T-07/T-15/T-16/
+T-18/T-23/T-24/T-25/T-26/T-28/T-30。
 
 环境：daily（config.LOGIN_URL 所在环境），登录态复用 config.STATE_FILE。
 用例只读查询，不做上下架/分配/保存等写操作。
@@ -395,6 +398,121 @@ def test_t22_subject_switch_clears_type(page: Page) -> None:
     assert not frame.get_by_role("checkbox", name="计算题", exact=True).is_checked(), "切换学段后题型未清空"
 
     frame.get_by_role("button", name="取 消").click()
+
+
+# CASE_WEB_573_14 / T-12：图书管理错误明细「错误原因」单选、默认全部，选具体类型后结果收窄
+def test_t12_error_detail_single_reason_filter(page: Page) -> None:
+    frame = _open_module(page, "图书管理")
+    content = _content_frame(page, "bookManagement")
+    row = frame.locator("tbody tr").filter(has_text="57414").first
+    expect(row).to_be_visible(timeout=60000)
+
+    row.locator("span").filter(has_text="板书错误").first.locator("a").click()
+    dialog = frame.locator("[role=dialog]").filter(has_text="板书错误").first
+    expect(dialog).to_be_visible(timeout=30000)
+
+    dialog.locator("thead th").filter(has_text="错误原因").locator("[role=button]").click()
+    popup = frame.locator(".yt5-antd-table-filter-dropdown:visible").first
+    expect(popup).to_be_visible(timeout=10000)
+    radios = popup.locator("input[type=radio]")
+    expect(radios).to_have_count(11)
+    assert radios.first.is_checked(), "错误原因默认未选中「全部」"
+
+    popup.get_by_text("违规独立答案卡片", exact=True).click()
+    popup.locator("button").filter(has_text=re.compile(r"确\s*定")).click()
+    rows = dialog.locator("tbody tr").filter(has_text=re.compile(r".+"))
+    expect(rows).to_have_count(1, timeout=15000)
+    assert "违规独立答案卡片" in rows.first.inner_text()
+
+
+# CASE_WEB_573_15 / T-19：1280×720 下表头/单元格对齐，横向滚动同步，固定列不遮挡
+def test_t19_question_bank_1280_alignment(page: Page) -> None:
+    page.set_viewport_size({"width": 1280, "height": 720})
+    try:
+        frame = _open_module(page, "题库")
+        _wait_total(frame)
+        content = _content_frame(page, "questionBank.htm")
+
+        metrics = content.evaluate(
+            """() => {
+                const h = document.querySelector('.yt5-antd-table-header');
+                const b = document.querySelector('.yt5-antd-table-body');
+                h.scrollLeft = 0; b.scrollLeft = 0;
+                return {vw: innerWidth, docW: document.documentElement.scrollWidth};
+            }"""
+        )
+        assert metrics["docW"] <= metrics["vw"], f"页面级横向溢出：{metrics}"
+
+        box = page.locator("iframe").last.bounding_box()
+        assert box, "未找到业务 iframe"
+        page.mouse.move(box["x"] + box["width"] * 0.6, box["y"] + box["height"] * 0.5)
+        page.mouse.wheel(900, 0)
+        page.wait_for_timeout(500)
+
+        state = content.evaluate(
+            """() => {
+                const h = document.querySelector('.yt5-antd-table-header');
+                const b = document.querySelector('.yt5-antd-table-body');
+                const ths = [...document.querySelectorAll('.yt5-antd-table-header thead th')];
+                const tr = [...document.querySelectorAll('.yt5-antd-table-body tbody tr')]
+                    .find(r => r.offsetParent !== null && r.innerText.trim() && !r.className.includes('measure'));
+                const deltas = ths.map((th, i) => {
+                    const a = th.getBoundingClientRect();
+                    const c = tr.children[i]?.getBoundingClientRect();
+                    return c ? Math.round(c.left - a.left) : null;
+                });
+                return {h: h.scrollLeft, b: b.scrollLeft, deltas};
+            }"""
+        )
+        assert state["h"] == state["b"], f"表头与内容区滚动不同步：{state}"
+        assert state["h"] > 0, "横向滚动未生效"
+        assert [d for d in state["deltas"] if d is not None] == [0] * len(state["deltas"]), (
+            f"表头与单元格未对齐：{state['deltas']}"
+        )
+    finally:
+        page.set_viewport_size({"width": 1440, "height": 900})
+
+
+# CASE_WEB_573_16 / T-20：切换一级错误分类后，错误原因筛选重置为「全部」
+def test_t20_error_category_switch_resets_reason(page: Page) -> None:
+    frame = _open_module(page, "图书管理")
+    row = frame.locator("tbody tr").filter(has_text="57414").first
+    expect(row).to_be_visible(timeout=60000)
+
+    def open_category(name: str):
+        row.locator("span").filter(has_text=name).first.locator("a").click()
+        dialog = frame.locator("[role=dialog]").filter(has_text=name).first
+        expect(dialog).to_be_visible(timeout=30000)
+        return dialog
+
+    def selected_reason(dialog):
+        dialog.locator("thead th").filter(has_text="错误原因").locator("[role=button]").click()
+        popup = frame.locator(".yt5-antd-table-filter-dropdown:visible").first
+        expect(popup).to_be_visible(timeout=10000)
+        checked = popup.locator("input[type=radio]:checked").count()
+        label = popup.locator("input[type=radio]:checked").evaluate(
+            "el => el.closest('li').innerText.trim()"
+        )
+        page.keyboard.press("Escape")
+        return checked, label.strip()
+
+    board = open_category("板书错误")
+    board.locator("thead th").filter(has_text="错误原因").locator("[role=button]").click()
+    popup = frame.locator(".yt5-antd-table-filter-dropdown:visible").first
+    popup.get_by_text("违规独立答案卡片", exact=True).click()
+    popup.locator("button").filter(has_text=re.compile(r"确\s*定")).click()
+    board.get_by_role("button", name="Close").click()
+
+    lecture = open_category("讲稿错误")
+    expect(lecture.locator("tbody tr").filter(has_text=re.compile(r".+"))).to_have_count(2, timeout=20000)
+    checked, label = selected_reason(lecture)
+    assert checked == 1 and label == "全部", f"切换一级后二级未重置：{checked}/{label}"
+    lecture.get_by_role("button", name="Close").click()
+
+    board2 = open_category("板书错误")
+    expect(board2.locator("tbody tr").filter(has_text=re.compile(r".+"))).to_have_count(1, timeout=20000)
+    checked, label = selected_reason(board2)
+    assert checked == 1 and label == "全部", f"切回一级后二级未重置：{checked}/{label}"
 
 
 # CASE_WEB_573_12 / T-27：1440×900 下四个入口无页面级横向溢出

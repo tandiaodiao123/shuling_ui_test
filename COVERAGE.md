@@ -19,6 +19,9 @@
 | CASE_WEB_573_11 | Web | 切换学段清空题型（T-22） | `tests/web/test_shuling_573_admin.py` | `test_t22_subject_switch_clears_type` | 待人工验证 | 2026-11-25 |
 | CASE_WEB_573_12 | Web | 四入口 1440×900 无横向溢出（T-27） | `tests/web/test_shuling_573_admin.py` | `test_t27_four_entries_no_overflow_at_1440` | 待人工验证 | 2026-11-25 |
 | CASE_WEB_573_13 | Web | 题库列表深链直达（T-29） | `tests/web/test_shuling_573_admin.py` | `test_t29_question_bank_deep_link` | 待人工验证 | 2026-11-25 |
+| CASE_WEB_573_14 | Web | 错误明细错误原因单选与筛选（T-12） | `tests/web/test_shuling_573_admin.py` | `test_t12_error_detail_single_reason_filter` | 待人工验证 | 2026-11-26 |
+| CASE_WEB_573_15 | Web | 题库 1280×720 表头对齐与横向滚动（T-19） | `tests/web/test_shuling_573_admin.py` | `test_t19_question_bank_1280_alignment` | 待人工验证 | 2026-11-26 |
+| CASE_WEB_573_16 | Web | 切换错误分类重置错误原因（T-20） | `tests/web/test_shuling_573_admin.py` | `test_t20_error_category_switch_resets_reason` | 待人工验证 | 2026-11-26 |
 
 状态取值：已入库 / 待人工验证 / 已废弃。
 
